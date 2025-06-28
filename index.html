@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SoundMark</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 p-6 min-h-screen">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4">SoundMark</h1>
+
+    <div class="bg-white p-4 rounded shadow mb-6">
+      <input id="location" class="w-full border p-2 rounded mb-2" placeholder="Location (e.g., park bench, city street)">
+      <input id="sound" class="w-full border p-2 rounded mb-2" placeholder="What did you hear? (e.g., birds chirping)">
+      <select id="mood" class="w-full border p-2 rounded mb-2">
+        <option value="">Mood...</option>
+        <option value="calm">Calm</option>
+        <option value="nostalgic">Nostalgic</option>
+        <option value="tense">Tense</option>
+        <option value="happy">Happy</option>
+        <option value="anxious">Anxious</option>
+      </select>
+      <textarea id="note" class="w-full border p-2 rounded mb-2" rows="3" placeholder="Optional note or reflection"></textarea>
+      <button onclick="addSoundMark()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Add Entry</button>
+    </div>
+
+    <div id="entries" class="space-y-4"></div>
+  </div>
+
+  <script>
+    const addSoundMark = () => {
+      const location = document.getElementById('location').value.trim();
+      const sound = document.getElementById('sound').value.trim();
+      const mood = document.getElementById('mood').value;
+      const note = document.getElementById('note').value.trim();
+
+      if (!location || !sound || !mood) return alert("Please fill out location, sound, and mood.");
+
+      const entry = { location, sound, mood, note, timestamp: new Date().toLocaleString() };
+      const all = JSON.parse(localStorage.getItem('soundmarks') || '[]');
+      all.unshift(entry);
+      localStorage.setItem('soundmarks', JSON.stringify(all));
+      renderEntries();
+      document.getElementById('location').value = '';
+      document.getElementById('sound').value = '';
+      document.getElementById('mood').value = '';
+      document.getElementById('note').value = '';
+    }
+
+    const renderEntries = () => {
+      const entries = JSON.parse(localStorage.getItem('soundmarks') || '[]');
+      document.getElementById('entries').innerHTML = entries.map(e => `
+        <div class="bg-white rounded p-4 shadow">
+          <div class="text-sm text-gray-500">${e.timestamp}</div>
+          <div><strong>Location:</strong> ${e.location}</div>
+          <div><strong>Sound:</strong> ${e.sound}</div>
+          <div><strong>Mood:</strong> ${e.mood}</div>
+          ${e.note ? `<div class="mt-1"><em>${e.note}</em></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    renderEntries();
+  </script>
+</body>
+</html>
